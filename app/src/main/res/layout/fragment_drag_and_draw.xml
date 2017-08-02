@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/image_view_photoholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/livingroom" />
+
+    <dev.patternoid.com.touchinputtest.BoxDrawingView
+
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/box_drawing_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </dev.patternoid.com.touchinputtest.BoxDrawingView>
+
+    <GridView
+        android:id="@+id/grid_view_blind_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:numColumns="auto_fit"
+        android:visibility="invisible" />
+
+
+</RelativeLayout>
+
