@@ -3,31 +3,64 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/image_view_photoholder"
+    <LinearLayout
+        android:id="@+id/linear_vertical_layout_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        android:src="@drawable/livingroom" />
+        android:orientation="vertical"
+        android:weightSum="10">
 
-    <dev.patternoid.com.touchinputtest.BoxDrawingView
+        <ImageView
+            android:id="@+id/image_view_photoholder"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8.5"
+            android:scaleType="fitXY"
+            android:src="@drawable/livingroom"/>
 
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/box_drawing_view"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.5"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_pattern_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layoutManager="LinearLayoutManager"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10">
 
-    </dev.patternoid.com.touchinputtest.BoxDrawingView>
+        <dev.patternoid.com.touchinputtest.BoxDrawingView
 
-    <GridView
-        android:id="@+id/grid_view_blind_holder"
+            android:id="@+id/box_drawing_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8.5">
+
+        </dev.patternoid.com.touchinputtest.BoxDrawingView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_pattern_holder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
-        android:numColumns="auto_fit"
-        android:visibility="invisible" />
+        android:orientation="vertical">
+    </LinearLayout>
 
 
 </RelativeLayout>

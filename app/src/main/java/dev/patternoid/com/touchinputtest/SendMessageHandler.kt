@@ -25,12 +25,8 @@ class SendMessageHandler : Handler{
 
             DragAndDrawFragment.MESSAGE_TEST->
             {
-                targetFragment!!.setGridView()
-
+                targetFragment!!.makePatternLayout()
             }
         }
-
-
     }
-
 }
