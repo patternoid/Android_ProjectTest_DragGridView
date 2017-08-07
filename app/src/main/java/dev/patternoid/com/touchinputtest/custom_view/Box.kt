@@ -1,4 +1,4 @@
-package dev.patternoid.com.touchinputtest
+package dev.patternoid.com.touchinputtest.custom_view
 
 import android.graphics.PointF
 

@@ -1,9 +1,10 @@
-package dev.patternoid.com.touchinputtest
+package dev.patternoid.com.touchinputtest.abstracts
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
+import dev.patternoid.com.touchinputtest.R
 
 /**
  * Created by patternoid on 2017. 8. 2..

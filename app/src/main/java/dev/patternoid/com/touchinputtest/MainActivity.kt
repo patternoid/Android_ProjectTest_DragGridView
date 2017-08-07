@@ -1,6 +1,7 @@
 package dev.patternoid.com.touchinputtest
 
 import android.support.v4.app.Fragment
+import dev.patternoid.com.touchinputtest.abstracts.SingleFragmentActivity
 
 class MainActivity : SingleFragmentActivity() {
 

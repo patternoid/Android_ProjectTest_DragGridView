@@ -1,4 +1,4 @@
-package dev.patternoid.com.touchinputtest
+package dev.patternoid.com.touchinputtest.custom_view
 
 import android.content.Context
 import android.graphics.Canvas
@@ -8,7 +8,8 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import kotlinx.android.synthetic.main.fragment_drag_and_draw.view.*
+import dev.patternoid.com.touchinputtest.DragAndDrawFragment
+import dev.patternoid.com.touchinputtest.SendMessageHandler
 
 /**
  * Created by patternoid on 2017. 8. 2..
@@ -23,15 +24,17 @@ class BoxDrawingView : View {
     private var mBoxen      : ArrayList<Box>    = ArrayList<Box>()
     private var mBoxPaint   : Paint?            = null
     private var mBackgroundPaint : Paint?       = null
-
     private var mTestBoolean : Boolean          = false
 
-
+    var mMessageHandler : SendMessageHandler?   = null
     var posX : Float = 0f
     var posY : Float = 0f
 
     constructor( context: Context ) : this( context, null )
     constructor( context : Context , attrs : AttributeSet? ) : super( context, attrs )
+
+
+
 
     init {
 
@@ -44,6 +47,11 @@ class BoxDrawingView : View {
         mBackgroundPaint = Paint()
         mBackgroundPaint!!.color = (0xfff8efe0).toInt()
     }
+
+
+
+
+
 
 
 
@@ -79,7 +87,7 @@ class BoxDrawingView : View {
 
                 mTestBoolean = true
                 //그리드 레이아웃을 설정하여
-                DragAndDrawFragment.messageHandler!!.sendEmptyMessage(DragAndDrawFragment.MESSAGE_TEST)
+                mMessageHandler?.sendEmptyMessage(DragAndDrawFragment.MESSAGE_UPDATE_PATTERN_CHUNK)
                 //mCurrentBox = null
             }
 
@@ -89,10 +97,14 @@ class BoxDrawingView : View {
             }
         }
 
-        Log.i( TAG, action + " at x=" + current.x + ", y=" + current.y )
+        Log.i(TAG, action + " at x=" + current.x + ", y=" + current.y )
 
         return true
     }
+
+
+
+
 
 
     override fun onDraw(canvas: Canvas?) {
@@ -109,11 +121,17 @@ class BoxDrawingView : View {
             canvas?.drawRect(left, top, right, bottom, mBoxPaint)
         }
 
+        //테스트로 PolyToPoly로 그려본다.
+
+
     }
 
 
 
-    fun getBoxData() : Box{
+
+
+    fun getBoxData() : Box {
         return mBoxen[0]
     }
+
 }

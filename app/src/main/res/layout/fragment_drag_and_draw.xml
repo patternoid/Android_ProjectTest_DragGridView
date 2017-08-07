@@ -43,14 +43,14 @@
         android:orientation="vertical"
         android:weightSum="10">
 
-        <dev.patternoid.com.touchinputtest.BoxDrawingView
+        <dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView
 
             android:id="@+id/box_drawing_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8.5">
 
-        </dev.patternoid.com.touchinputtest.BoxDrawingView>
+        </dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView>
 
     </LinearLayout>
 

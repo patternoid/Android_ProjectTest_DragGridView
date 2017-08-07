@@ -1,21 +1,17 @@
 package dev.patternoid.com.touchinputtest
 
-import android.content.Context
-import android.content.res.Resources
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import dev.patternoid.com.touchinputtest.custom_view.Box
+import dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView
+import dev.patternoid.com.touchinputtest.patternchunk.PatternChunkListAdapter
+import dev.patternoid.com.touchinputtest.util.Utils
 import kotlinx.android.synthetic.main.fragment_drag_and_draw.*
 
 /**
@@ -25,33 +21,35 @@ import kotlinx.android.synthetic.main.fragment_drag_and_draw.*
 class DragAndDrawFragment : Fragment(){
 
     companion object {
-
-        var MESSAGE_TEST : Int = 0
-
-        var messageHandler : SendMessageHandler? = null
-
-        var imageList : ArrayList<ImageView>? = null
-
+        var MESSAGE_UPDATE_PATTERN_CHUNK    : Int = 0
+        var mPatternChunkImageViews         : ArrayList<ImageView>?  = null
 
         fun newInstance() : DragAndDrawFragment{
             return DragAndDrawFragment()
         }
     }
 
+    private var mPatternChunkListAdapter : PatternChunkListAdapter? = null
 
-    private var patternAdapter : PatternAdapter? = null
+    var mMessageHandler  : SendMessageHandler?    = null
+    var mBoxDrawingView : BoxDrawingView? = null
+
+
 
 
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view : View? = inflater?.inflate( R.layout.fragment_drag_and_draw, container, false)
 
-        messageHandler =  SendMessageHandler(this@DragAndDrawFragment)
-
         updateFooterUI(view!!)
+
+        mMessageHandler = SendMessageHandler(this@DragAndDrawFragment)
+        mBoxDrawingView = box_drawing_view
+        mBoxDrawingView?.mMessageHandler = mMessageHandler
 
         return view
     }
+
 
 
 
@@ -59,7 +57,7 @@ class DragAndDrawFragment : Fragment(){
         var patternLayout       = view!!.findViewById<LinearLayout>(R.id.linear_layout_pattern_holder)
         var patternLayoutParam  =  patternLayout.layoutParams
 
-        var region : Box        =  box_drawing_view.getBoxData()
+        var region : Box =  box_drawing_view.getBoxData()
 
         val left : Float = Math.min( region.mOrigin!!.x, region.mCurrent!!.x )
         val right: Float = Math.max( region.mOrigin!!.x, region.mCurrent!!.x )
@@ -85,7 +83,7 @@ class DragAndDrawFragment : Fragment(){
         if( (bottom - top).toInt() % 50 != 0)
             heighNum += 1
 
-        imageList = ArrayList<ImageView>()
+        mPatternChunkImageViews = ArrayList<ImageView>()
 
         for( i : Int in 1..heighNum ){
 
@@ -94,7 +92,7 @@ class DragAndDrawFragment : Fragment(){
             horizontalLayout.orientation = LinearLayout.HORIZONTAL
             horizontalLayout.weightSum = 1f
 
-            var width = convertPixelsToDp((50 * widthNum).toFloat() , activity)
+            var width = Utils.convertPixelsToDp((50 * widthNum).toFloat() , activity)
             width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, resources.displayMetrics)
 
             horizontalLayout.layoutParams = LinearLayout.LayoutParams( width.toInt() , LinearLayout.LayoutParams.WRAP_CONTENT )
@@ -110,7 +108,7 @@ class DragAndDrawFragment : Fragment(){
 
                     horizontalLayout.addView( patternImageView)
 
-                imageList?.add(patternImageView)
+                mPatternChunkImageViews?.add(patternImageView)
             }
 
             //완성된 리니어 레이아웃을 부모 Vertical Linear Layout에 넣어준다.
@@ -118,18 +116,6 @@ class DragAndDrawFragment : Fragment(){
         }
     }
 
-
-
-    fun convertPixelsToDp(  px : Float,  context : Context) : Float {
-
-        val resources = context.resources
-        val metrics = resources.displayMetrics
-
-        val dp = px / (metrics.densityDpi / 160f)
-
-        return dp
-
-    }
 
 
 
@@ -148,74 +134,9 @@ class DragAndDrawFragment : Fragment(){
                 ,R.drawable.pattern_9
                 ,R.drawable.pattern_10 )
 
-        patternAdapter = PatternAdapter(activity, imageIDs)
+        mPatternChunkListAdapter = PatternChunkListAdapter(activity, imageIDs)
 
         val recyclerView  = inflateView.findViewById<RecyclerView>(R.id.recycler_view_pattern_buttons)
-        recyclerView.adapter = patternAdapter
-    }
-
-
-
-
-
-
-    private class PatternHolder : RecyclerView.ViewHolder{
-
-        var textView : TextView? = null
-        var imageButton : ImageButton? = null
-        var index       : Int = 0
-
-        constructor( itemView : View ) : super(itemView ){
-            textView    = itemView.findViewById<TextView>(R.id.text_view_pattern_name)
-            imageButton = itemView.findViewById<ImageButton>(R.id.image_button_patterns)
-
-
-            imageButton!!.setOnClickListener( object : View.OnClickListener{
-                override fun onClick(p0: View?) {
-                    val resId = itemView.context.resources.getIdentifier("pattern_"+ (index+1), "drawable", itemView.context.packageName )
-
-                    for( image : ImageView in DragAndDrawFragment.imageList!! ){
-                        image.setImageResource(resId)
-                    }
-                }
-
-            })
-        }
-    }
-
-
-
-    private class PatternAdapter : RecyclerView.Adapter<PatternHolder>{
-
-        private var mPattern : IntArray? = null
-        private var layoutInflater : LayoutInflater? = null
-
-        constructor(context : Context, patterns : IntArray){
-            mPattern = patterns
-            layoutInflater = LayoutInflater.from(context)
-        }
-
-
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): PatternHolder {
-
-            val view : View = layoutInflater!!.inflate(R.layout.button_pattern, parent, false)
-
-            return PatternHolder(view)
-        }
-
-
-
-        override fun onBindViewHolder(holder: PatternHolder?, position: Int) {
-            holder?.imageButton!!.setImageResource( mPattern!![position] )
-            holder?.textView!!.text = "패턴_" + (position+1)
-
-            holder?.index = position
-        }
-
-
-
-        override fun getItemCount(): Int {
-            return mPattern!!.size
-        }
+        recyclerView.adapter = mPatternChunkListAdapter
     }
 }

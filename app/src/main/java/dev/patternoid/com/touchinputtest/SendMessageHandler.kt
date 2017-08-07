@@ -23,7 +23,7 @@ class SendMessageHandler : Handler{
 
         when( msg?.what ){
 
-            DragAndDrawFragment.MESSAGE_TEST->
+            DragAndDrawFragment.MESSAGE_UPDATE_PATTERN_CHUNK->
             {
                 targetFragment!!.makePatternLayout()
             }
