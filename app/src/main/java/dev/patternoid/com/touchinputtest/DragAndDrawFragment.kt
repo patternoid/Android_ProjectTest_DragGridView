@@ -1,8 +1,12 @@
 package dev.patternoid.com.touchinputtest
 
 import android.os.Bundle
+import android.support.annotation.VisibleForTesting
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
+import android.transition.Visibility
+import android.util.DisplayMetrics
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.*
 import dev.patternoid.com.touchinputtest.custom_view.Box
 import dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView
+import dev.patternoid.com.touchinputtest.custom_view.PerspectiveDistortView
+import dev.patternoid.com.touchinputtest.model.DataManager
 import dev.patternoid.com.touchinputtest.patternchunk.PatternChunkListAdapter
 import dev.patternoid.com.touchinputtest.util.Utils
 import kotlinx.android.synthetic.main.fragment_drag_and_draw.*
@@ -33,6 +39,7 @@ class DragAndDrawFragment : Fragment(){
 
     var mMessageHandler  : SendMessageHandler?    = null
     var mBoxDrawingView : BoxDrawingView? = null
+    var mEditBoxCustomView : PerspectiveDistortView? = null
 
 
 
@@ -44,8 +51,20 @@ class DragAndDrawFragment : Fragment(){
         updateFooterUI(view!!)
 
         mMessageHandler = SendMessageHandler(this@DragAndDrawFragment)
-        mBoxDrawingView = box_drawing_view
-        mBoxDrawingView?.mMessageHandler = mMessageHandler
+        //mBoxDrawingView = box_drawing_view
+        //mBoxDrawingView?.mMessageHandler = mMessageHandler
+
+        var buttonEdit = view.findViewById<Button>(R.id.button_edit)
+        buttonEdit.setOnClickListener { v ->
+            //편집을 위한 사각형을 생성하는 구문을 호출한다.
+            edit_box_custom_view.visibility = View.VISIBLE
+        }
+
+
+        var metrics : DisplayMetrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(metrics)
+        mEditBoxCustomView = view.findViewById<PerspectiveDistortView>(R.id.edit_box_custom_view);
+        mEditBoxCustomView!!.setBoxWidthHeight( metrics.widthPixels, metrics.heightPixels )
 
         return view
     }
@@ -53,6 +72,36 @@ class DragAndDrawFragment : Fragment(){
 
 
 
+
+
+    fun updateFooterUI(inflateView : View ){
+        var imageIDs = intArrayOf(
+                R.drawable.pattern_1
+                ,R.drawable.pattern_2
+                ,R.drawable.pattern_3
+                ,R.drawable.pattern_4
+                ,R.drawable.pattern_5
+                ,R.drawable.pattern_6
+                ,R.drawable.pattern_7
+                ,R.drawable.pattern_8
+                ,R.drawable.pattern_9
+                ,R.drawable.pattern_10 )
+
+        mPatternChunkListAdapter = PatternChunkListAdapter(activity, imageIDs, this)
+
+        val recyclerView  = inflateView.findViewById<RecyclerView>(R.id.recycler_view_pattern_buttons)
+        recyclerView.adapter = mPatternChunkListAdapter
+    }
+
+
+
+    fun setPatternImage(){
+        var resID : Int = DataManager.instance.mUserSelectedPattern.mSelectedPatternID
+        mEditBoxCustomView!!.setPatternImage( resID )
+    }
+
+
+/*
     fun makePatternLayout(){
         var patternLayout       = view!!.findViewById<LinearLayout>(R.id.linear_layout_pattern_holder)
         var patternLayoutParam  =  patternLayout.layoutParams
@@ -99,14 +148,14 @@ class DragAndDrawFragment : Fragment(){
 
 
             for( j : Int in 1..widthNum ){
-                    val patternImageView = ImageView(context)
-                    patternImageView.setImageResource(R.drawable.temp)
-                    patternImageView.scaleType = ImageView.ScaleType.MATRIX
-                    patternImageView.layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                val patternImageView = ImageView(context)
+                patternImageView.setImageResource(R.drawable.temp)
+                patternImageView.scaleType = ImageView.ScaleType.MATRIX
+                patternImageView.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
 
-                    horizontalLayout.addView( patternImageView)
+                horizontalLayout.addView( patternImageView)
 
                 mPatternChunkImageViews?.add(patternImageView)
             }
@@ -115,28 +164,5 @@ class DragAndDrawFragment : Fragment(){
             patternLayout.addView( horizontalLayout )
         }
     }
-
-
-
-
-
-
-    fun updateFooterUI(inflateView : View ){
-        var imageIDs = intArrayOf(
-                R.drawable.pattern_1
-                ,R.drawable.pattern_2
-                ,R.drawable.pattern_3
-                ,R.drawable.pattern_4
-                ,R.drawable.pattern_5
-                ,R.drawable.pattern_6
-                ,R.drawable.pattern_7
-                ,R.drawable.pattern_8
-                ,R.drawable.pattern_9
-                ,R.drawable.pattern_10 )
-
-        mPatternChunkListAdapter = PatternChunkListAdapter(activity, imageIDs)
-
-        val recyclerView  = inflateView.findViewById<RecyclerView>(R.id.recycler_view_pattern_buttons)
-        recyclerView.adapter = mPatternChunkListAdapter
-    }
+    */
 }

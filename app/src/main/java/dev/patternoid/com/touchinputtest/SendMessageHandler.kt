@@ -25,7 +25,7 @@ class SendMessageHandler : Handler{
 
             DragAndDrawFragment.MESSAGE_UPDATE_PATTERN_CHUNK->
             {
-                targetFragment!!.makePatternLayout()
+                //targetFragment!!.makePatternLayout()
             }
         }
     }

@@ -43,14 +43,24 @@
         android:orientation="vertical"
         android:weightSum="10">
 
+        <!--
         <dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView
-
             android:id="@+id/box_drawing_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8.5">
-
         </dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView>
+        -->
+
+        <dev.patternoid.com.touchinputtest.custom_view.PerspectiveDistortView
+            android:id="@+id/edit_box_custom_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8.5"
+            android:visibility="invisible">
+
+        </dev.patternoid.com.touchinputtest.custom_view.PerspectiveDistortView>
+
 
     </LinearLayout>
 
@@ -62,6 +72,12 @@
         android:orientation="vertical">
     </LinearLayout>
 
+    <Button
+        android:id="@+id/button_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:textAlignment="center"/>
 
 </RelativeLayout>
 

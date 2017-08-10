@@ -3,33 +3,54 @@ package dev.patternoid.com.touchinputtest.patternchunk
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import dev.patternoid.com.touchinputtest.DragAndDrawFragment
 import dev.patternoid.com.touchinputtest.R
+import dev.patternoid.com.touchinputtest.model.DataManager
 
 /**
  * Created by Patternoid on 2017-08-07.
  */
 class PatternChunkListHolder : RecyclerView.ViewHolder {
 
-    var textView: TextView? = null
-    var imageButton: ImageButton? = null
-    var index: Int = 0
+    private var mFragment       : DragAndDrawFragment? = null
+    private var mNameTextView   : TextView? = null
+    private var mPatternButton  : ImageButton? = null
 
-    constructor(itemView: View) : super(itemView) {
+    private var mIndex          : Int = 0
 
-        textView = itemView.findViewById<TextView>(R.id.text_view_pattern_name)
-        imageButton = itemView.findViewById<ImageButton>(R.id.image_button_patterns)
-        imageButton!!.setOnClickListener(object : View.OnClickListener {
+
+
+    constructor(itemView: View, fragment: DragAndDrawFragment? ) : super(itemView) {
+
+        mNameTextView   = itemView.findViewById<TextView>(R.id.text_view_pattern_name)
+        mPatternButton  = itemView.findViewById<ImageButton>(R.id.image_button_patterns)
+        mFragment       = fragment
+
+
+        mPatternButton!!.setOnClickListener(object : View.OnClickListener {
+
             override fun onClick(p0: View?) {
-                val resId = itemView.context.resources.getIdentifier("pattern_" + (index + 1), "drawable", itemView.context.packageName)
 
-                for (image: ImageView in DragAndDrawFragment.mPatternChunkImageViews!!) {
+                val resId = itemView.context.resources.getIdentifier("pattern_" + (mIndex + 1), "drawable", itemView.context.packageName)
+                DataManager.instance.mUserSelectedPattern.mSelectedPatternID = resId
+
+                mFragment!!.setPatternImage()
+                /*for (image: ImageView in DragAndDrawFragment.mPatternChunkImageViews!!) {
                     image.setImageResource(resId)
-                }
+                }*/
             }
-
         })
+    }
+
+
+
+    fun setHolderInfo( resID : Int, index : Int ){
+
+        val nameText = "패턴_" + (index+1).toString()
+
+        mPatternButton!!.setImageResource(resID)
+        mNameTextView!!.setText(nameText)
+        mIndex = index
     }
 }
