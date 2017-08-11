@@ -3,21 +3,24 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:orientation="vertical"
-            android:padding="10dp">
+                android:layout_margin="5dp">
 
     <ImageButton
         android:id="@+id/image_button_patterns"
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:padding="0dp"
+        android:scaleType="fitXY"
         app:srcCompat="@drawable/pattern_1"/>
 
     <TextView
         android:id="@+id/text_view_pattern_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40sp"
+        android:layout_height="20sp"
         android:layout_below="@id/image_button_patterns"
         android:layout_centerHorizontal="true"
         android:text="패턴 1"/>

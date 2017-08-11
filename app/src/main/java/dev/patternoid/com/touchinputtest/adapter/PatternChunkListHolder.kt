@@ -1,4 +1,4 @@
-package dev.patternoid.com.touchinputtest.patternchunk
+package dev.patternoid.com.touchinputtest.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -36,10 +36,10 @@ class PatternChunkListHolder : RecyclerView.ViewHolder {
                 DataManager.instance.mUserSelectedPattern.mSelectedPatternID = resId
 
                 mFragment!!.setPatternImage()
-                /*for (image: ImageView in DragAndDrawFragment.mPatternChunkImageViews!!) {
-                    image.setImageResource(resId)
-                }*/
-            }
+            /*for (image: ImageView in DragAndDrawFragment.mPatternChunkImageViews!!) {
+                image.setImageResource(resId)
+            }*/
+        }
         })
     }
 

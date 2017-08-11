@@ -5,10 +5,15 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import dev.patternoid.com.touchinputtest.R
 import dev.patternoid.com.touchinputtest.util.Utils
+import android.graphics.LightingColorFilter
+import android.graphics.ColorFilter
+
+
 
 /**
  * Created by Patternoid on 2017-08-10.
@@ -27,6 +32,9 @@ class PerspectiveDistortView : View, View.OnTouchListener {
     private var mTouchPoint     : CirclePosition = CirclePosition.None
     private var mPaintRect      : Paint? = null
     private var mPaintCircle    : Paint? = null
+    private var mPaintBitmapAlpha: Paint? = null
+    private var mBitmapColorfilter : LightingColorFilter? = null
+
 
     var CIRCLE_TOP_LEFT         : Point? = null
     var CIRCLE_TOP_RIGHT        : Point? = null
@@ -56,6 +64,11 @@ class PerspectiveDistortView : View, View.OnTouchListener {
 
     private fun init() {
         this.setOnTouchListener(this)
+
+        mBitmapColorfilter = LightingColorFilter(Color.WHITE, 1)
+        mPaintBitmapAlpha = Paint()
+        mPaintBitmapAlpha!!.setColorFilter(mBitmapColorfilter)
+        mPaintBitmapAlpha!!.alpha = 190
 
         mPaintRect = Paint()
         mPaintRect!!.color = 0xffff0000.toInt()
@@ -133,7 +146,9 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         pts[15] = CIRCLE_TOP_RIGHT!!.y.toFloat()
 
         mPolyToPolyMatrix!!.setPolyToPoly(pts, 0, pts, 8, 4)
-        canvas.drawBitmap(mPatternImageBitmap, mPolyToPolyMatrix, null)
+
+
+        canvas.drawBitmap(mPatternImageBitmap, mPolyToPolyMatrix, mPaintBitmapAlpha)
 
         drawBoxLine(canvas)
         drawBoxTouchCircle(canvas)
@@ -311,6 +326,22 @@ class PerspectiveDistortView : View, View.OnTouchListener {
     fun setPatternImage( resID : Int){
 
         mPatternImageBitmap = BitmapFactory.decodeResource(resources, resID)
+        invalidate()
+    }
+
+
+
+    fun setPatternImageAlpha( progress : Int ){
+       mPaintBitmapAlpha!!.alpha = progress
+        invalidate()
+    }
+
+
+
+    fun setPatternColor( color : Int){
+
+        mBitmapColorfilter = LightingColorFilter(color, 1)
+        mPaintBitmapAlpha!!.setColorFilter(mBitmapColorfilter)
         invalidate()
     }
 }

@@ -17,15 +17,34 @@
             android:id="@+id/image_view_photoholder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="8.5"
+            android:layout_weight="8"
             android:scaleType="fitXY"
             android:src="@drawable/livingroom"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.5"
+            android:layout_weight="0.7"
             android:orientation="horizontal">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_color_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layoutManager="LinearLayoutManager"/>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.3"
+            android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view_pattern_buttons"
@@ -56,12 +75,10 @@
             android:id="@+id/edit_box_custom_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="8.5"
+            android:layout_weight="8"
             android:visibility="invisible">
 
         </dev.patternoid.com.touchinputtest.custom_view.PerspectiveDistortView>
-
-
     </LinearLayout>
 
     <LinearLayout
@@ -78,6 +95,16 @@
         android:layout_height="wrap_content"
         android:text="Edit"
         android:textAlignment="center"/>
+
+    <SeekBar
+        android:id="@+id/seekBar_alpha_value"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/button_edit"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/button_edit"
+        android:max="255"
+        android:progress="190"/>
 
 </RelativeLayout>
 

@@ -11,5 +11,5 @@ class DataManager private constructor(){
         val instance : DataManager by lazy { Holder.INSTANCE }
     }
 
-    var mUserSelectedPattern : UserSelectedPattern = UserSelectedPattern(0)
+    var mUserSelectedPattern : UserSelectedPattern = UserSelectedPattern(0, 0)
 }

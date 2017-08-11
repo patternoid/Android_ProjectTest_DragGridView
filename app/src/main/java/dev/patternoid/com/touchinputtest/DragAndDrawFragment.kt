@@ -1,23 +1,18 @@
 package dev.patternoid.com.touchinputtest
 
 import android.os.Bundle
-import android.support.annotation.VisibleForTesting
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
-import android.transition.Visibility
 import android.util.DisplayMetrics
-import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import dev.patternoid.com.touchinputtest.custom_view.Box
 import dev.patternoid.com.touchinputtest.custom_view.BoxDrawingView
 import dev.patternoid.com.touchinputtest.custom_view.PerspectiveDistortView
 import dev.patternoid.com.touchinputtest.model.DataManager
-import dev.patternoid.com.touchinputtest.patternchunk.PatternChunkListAdapter
-import dev.patternoid.com.touchinputtest.util.Utils
+import dev.patternoid.com.touchinputtest.adapter.PatternChunkListAdapter
+import dev.patternoid.com.touchinputtest.adapter.PatternColorListAdapter
 import kotlinx.android.synthetic.main.fragment_drag_and_draw.*
 
 /**
@@ -36,11 +31,12 @@ class DragAndDrawFragment : Fragment(){
     }
 
     private var mPatternChunkListAdapter : PatternChunkListAdapter? = null
+    private var mPatternColorListAdpater : PatternColorListAdapter? = null
 
     var mMessageHandler  : SendMessageHandler?    = null
     var mBoxDrawingView : BoxDrawingView? = null
     var mEditBoxCustomView : PerspectiveDistortView? = null
-
+    var mAlphaSeekBar   :   SeekBar? = null
 
 
 
@@ -65,6 +61,28 @@ class DragAndDrawFragment : Fragment(){
         activity.windowManager.defaultDisplay.getMetrics(metrics)
         mEditBoxCustomView = view.findViewById<PerspectiveDistortView>(R.id.edit_box_custom_view);
         mEditBoxCustomView!!.setBoxWidthHeight( metrics.widthPixels, metrics.heightPixels )
+
+
+        //Seekbar 구현
+        mAlphaSeekBar = view.findViewById<SeekBar>(R.id.seekBar_alpha_value)
+        mAlphaSeekBar!!.setOnSeekBarChangeListener( object : SeekBar.OnSeekBarChangeListener{
+
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser : Boolean) {
+                mEditBoxCustomView!!.setPatternImageAlpha(progress)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
+
+
 
         return view
     }
@@ -91,6 +109,12 @@ class DragAndDrawFragment : Fragment(){
 
         val recyclerView  = inflateView.findViewById<RecyclerView>(R.id.recycler_view_pattern_buttons)
         recyclerView.adapter = mPatternChunkListAdapter
+
+
+
+        mPatternColorListAdpater    = PatternColorListAdapter( activity, this)
+        val colorRecyclerView       = inflateView.findViewById<RecyclerView>(R.id.recycler_view_color_buttons)
+        colorRecyclerView.adapter   = mPatternColorListAdpater
     }
 
 
@@ -98,6 +122,11 @@ class DragAndDrawFragment : Fragment(){
     fun setPatternImage(){
         var resID : Int = DataManager.instance.mUserSelectedPattern.mSelectedPatternID
         mEditBoxCustomView!!.setPatternImage( resID )
+    }
+
+    fun setPatternColor(){
+        val color : Int = DataManager.instance.mUserSelectedPattern.mSelectedColorID
+        mEditBoxCustomView!!.setPatternColor( color )
     }
 
 
