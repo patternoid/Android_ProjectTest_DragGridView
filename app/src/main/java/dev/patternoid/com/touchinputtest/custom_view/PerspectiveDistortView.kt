@@ -12,7 +12,7 @@ import dev.patternoid.com.touchinputtest.R
 import dev.patternoid.com.touchinputtest.util.Utils
 import android.graphics.LightingColorFilter
 import android.graphics.ColorFilter
-
+import dev.patternoid.com.touchinputtest.util.Draw
 
 
 /**
@@ -41,12 +41,20 @@ class PerspectiveDistortView : View, View.OnTouchListener {
     var CIRCLE_BOTTOM_LEFT      : Point? = null
     var CIRCLE_BOTTOM_RIGHT     : Point? = null
 
+    var MOVEBOX_TOP_LEFT        : Point? = null
+    var MOVEBOX_TOP_RIGHT       : Point? = null
+    var MOVEBOX_BOTTOM_LEFT     : Point? = null
+    var MOVEBOX_BOTTOM_RIGHT    : Point? = null
+
     //private int lastX, lastY;
     var mPatternImageBitmap     : Bitmap? = null
     var mBitmapDrawable         : BitmapDrawable? = null
     var mPolyToPolyMatrix       : Matrix? = null
 
 
+    var mIsTouchInMoveBoxArea   : Boolean = false
+    var mPrevTouchPoint         : Point?  = null
+    var mPaintMoveBoxLine       : Paint? = null
 
     constructor(context: Context) : super(context) {
         init()
@@ -64,6 +72,8 @@ class PerspectiveDistortView : View, View.OnTouchListener {
 
     private fun init() {
         this.setOnTouchListener(this)
+
+        mPrevTouchPoint     = Point()
 
         mBitmapColorfilter = LightingColorFilter(Color.WHITE, 1)
         mPaintBitmapAlpha = Paint()
@@ -86,6 +96,16 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         mPaintCircle!!.style = Paint.Style.FILL_AND_STROKE
         mPaintCircle!!.strokeJoin = Paint.Join.BEVEL
         mPaintCircle!!.strokeCap = Paint.Cap.BUTT
+
+        mPaintMoveBoxLine = Paint()
+        mPaintMoveBoxLine!!.color = 0xffffff00.toInt()
+        mPaintMoveBoxLine!!.isAntiAlias = true
+        mPaintMoveBoxLine!!.isDither = true
+        mPaintMoveBoxLine!!.style = Paint.Style.STROKE
+        mPaintMoveBoxLine!!.strokeJoin = Paint.Join.BEVEL
+        mPaintMoveBoxLine!!.strokeCap = Paint.Cap.BUTT
+        mPaintMoveBoxLine!!.strokeWidth = 10f
+
 
         mPatternImageBitmap = BitmapFactory.decodeResource(resources, R.drawable.pattern_1)
         mBitmapDrawable = BitmapDrawable(mPatternImageBitmap)
@@ -120,6 +140,11 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         CIRCLE_TOP_RIGHT    = Point(right, top)
         CIRCLE_BOTTOM_LEFT  = Point(left, bottom)
         CIRCLE_BOTTOM_RIGHT = Point(right, bottom)
+
+        MOVEBOX_TOP_LEFT    = Point(left, top)
+        MOVEBOX_TOP_RIGHT   = Point(right, top)
+        MOVEBOX_BOTTOM_LEFT = Point(left, bottom)
+        MOVEBOX_BOTTOM_RIGHT= Point(right, bottom)
     }
 
 
@@ -150,42 +175,15 @@ class PerspectiveDistortView : View, View.OnTouchListener {
 
         canvas.drawBitmap(mPatternImageBitmap, mPolyToPolyMatrix, mPaintBitmapAlpha)
 
-        drawBoxLine(canvas)
-        drawBoxTouchCircle(canvas)
+        Draw.drawBoxLine( canvas, CIRCLE_TOP_LEFT, CIRCLE_TOP_RIGHT, CIRCLE_BOTTOM_LEFT, CIRCLE_BOTTOM_RIGHT, mPaintRect )
+        Draw.drawBoxTouchCircle( canvas, CIRCLE_TOP_LEFT, CIRCLE_TOP_RIGHT, CIRCLE_BOTTOM_LEFT, CIRCLE_BOTTOM_RIGHT, mPaintCircle )
+
+        if( mIsTouchInMoveBoxArea ){
+            Draw.drawBoxLine( canvas, MOVEBOX_TOP_LEFT, MOVEBOX_TOP_RIGHT, MOVEBOX_BOTTOM_LEFT, MOVEBOX_BOTTOM_RIGHT, mPaintMoveBoxLine )
+        }
+
     }
 
-
-
-    fun drawBoxLine( canvas : Canvas){
-
-        // line left
-        canvas.drawLine(CIRCLE_TOP_LEFT!!.x.toFloat(), CIRCLE_TOP_LEFT!!.y.toFloat(), CIRCLE_BOTTOM_LEFT!!.x.toFloat(), CIRCLE_BOTTOM_LEFT!!.y.toFloat(), mPaintRect!!)
-
-        // line top
-        canvas.drawLine(CIRCLE_TOP_LEFT!!.x.toFloat(), CIRCLE_TOP_LEFT!!.y.toFloat(), CIRCLE_TOP_RIGHT!!.x.toFloat(), CIRCLE_TOP_RIGHT!!.y.toFloat(), mPaintRect!!)
-
-        // line right
-        canvas.drawLine(CIRCLE_TOP_RIGHT!!.x.toFloat(), CIRCLE_TOP_RIGHT!!.y.toFloat(), CIRCLE_BOTTOM_RIGHT!!.x.toFloat(), CIRCLE_BOTTOM_RIGHT!!.y.toFloat(), mPaintRect!!)
-
-        // line bottom
-        canvas.drawLine(CIRCLE_BOTTOM_LEFT!!.x.toFloat(), CIRCLE_BOTTOM_LEFT!!.y.toFloat(), CIRCLE_BOTTOM_RIGHT!!.x.toFloat(), CIRCLE_BOTTOM_RIGHT!!.y.toFloat(), mPaintRect!!)
-    }
-
-
-    fun drawBoxTouchCircle( canvas : Canvas ){
-
-        // circle top left
-        canvas.drawCircle(CIRCLE_TOP_LEFT!!.x.toFloat(), CIRCLE_TOP_LEFT!!.y.toFloat(), 10f, mPaintCircle!!)
-
-        // circle top right
-        canvas.drawCircle(CIRCLE_TOP_RIGHT!!.x.toFloat(), CIRCLE_TOP_RIGHT!!.y.toFloat(), 10f, mPaintCircle!!)
-
-        // circle bottom left
-        canvas.drawCircle(CIRCLE_BOTTOM_LEFT!!.x.toFloat(), CIRCLE_BOTTOM_LEFT!!.y.toFloat(), 10f, mPaintCircle!!)
-
-        // circle bottom right
-        canvas.drawCircle(CIRCLE_BOTTOM_RIGHT!!.x.toFloat(), CIRCLE_BOTTOM_RIGHT!!.y.toFloat(), 10f, mPaintCircle!!)
-    }
 
 
 
@@ -201,25 +199,61 @@ class PerspectiveDistortView : View, View.OnTouchListener {
                 if (inCircle(curTouchPoint, CirclePosition.TopLeft)) {
                     mTouchPoint = CirclePosition.TopLeft
                     UpdateTouchInCircle(mTouchPoint, CIRCLE_TOP_LEFT!!, curTouchPoint)
+                    UpdateMoveTouchArea()
 
                 } else if (inCircle(curTouchPoint, CirclePosition.TopRight)) {
                     mTouchPoint = CirclePosition.TopRight
                     UpdateTouchInCircle(mTouchPoint, CIRCLE_TOP_RIGHT!!, curTouchPoint)
+                    UpdateMoveTouchArea()
 
                 } else if (inCircle(curTouchPoint, CirclePosition.BottomLeft)) {
                     mTouchPoint = CirclePosition.BottomLeft
                     UpdateTouchInCircle(mTouchPoint, CIRCLE_BOTTOM_LEFT!!, curTouchPoint)
+                    UpdateMoveTouchArea()
 
                 } else if (inCircle(curTouchPoint, CirclePosition.BottomRight)) {
                     mTouchPoint = CirclePosition.BottomRight
                     UpdateTouchInCircle(mTouchPoint, CIRCLE_BOTTOM_RIGHT!!, curTouchPoint)
+                    UpdateMoveTouchArea()
+                } else if( inMoveBoxArea(curTouchPoint)){
+
+                    mIsTouchInMoveBoxArea = true
+
+                    //현재 터치지점을 기억해야 한다.
+                    mPrevTouchPoint = curTouchPoint
+
+                    //또한 영역을 그려주어야 한다.
+                    invalidate()
                 }
 
-            MotionEvent.ACTION_MOVE -> if (mTouchPoint != CirclePosition.None) {
-                UpdateTouchInCircle(mTouchPoint, curTouchPoint, curTouchPoint)
-            }
 
-            MotionEvent.ACTION_UP -> mTouchPoint = CirclePosition.None
+
+            MotionEvent.ACTION_MOVE ->
+
+                if (mTouchPoint != CirclePosition.None) {
+                    UpdateTouchInCircle(mTouchPoint, curTouchPoint, curTouchPoint)
+                    UpdateMoveTouchArea()
+
+                } else if( mIsTouchInMoveBoxArea){
+
+                    //박스 지점들을 이동한 만큼 이동시켜주고
+                    updateMoveBoxPosition(curTouchPoint)
+
+                    //이전 터치 포인트를 현재 포인트로 갱신시켜주고
+                    mPrevTouchPoint = curTouchPoint
+
+                    //다시 그리라고 명령해야 한다.
+                    invalidate()
+                }
+
+            MotionEvent.ACTION_UP ->
+            {
+                mTouchPoint = CirclePosition.None
+
+                mIsTouchInMoveBoxArea = false
+
+                invalidate()
+            }
         }
 
         return true
@@ -287,6 +321,75 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         }
 
         invalidate()
+    }
+
+
+
+    private fun UpdateMoveTouchArea(){
+
+        var leftX   : Int = 0
+        var rightX  : Int = 0
+        var topY    : Int = 0
+        var bottomY : Int = 0
+
+        //가장 왼쪽의 점을 구한다.
+        leftX   = if( CIRCLE_TOP_LEFT!!.x <= CIRCLE_BOTTOM_LEFT!!.x )    CIRCLE_TOP_LEFT!!.x    else CIRCLE_BOTTOM_LEFT!!.x
+        rightX  = if( CIRCLE_TOP_RIGHT!!.x >= CIRCLE_BOTTOM_RIGHT!!.x)   CIRCLE_TOP_RIGHT!!.x   else CIRCLE_BOTTOM_RIGHT!!.x
+        topY    = if( CIRCLE_TOP_LEFT!!.y <= CIRCLE_TOP_RIGHT!!.y)       CIRCLE_TOP_LEFT!!.y    else CIRCLE_TOP_RIGHT!!.y
+        bottomY = if( CIRCLE_BOTTOM_LEFT!!.y >= CIRCLE_BOTTOM_RIGHT!!.y) CIRCLE_BOTTOM_LEFT!!.y else CIRCLE_BOTTOM_RIGHT!!.y
+
+        MOVEBOX_TOP_LEFT!!.x    = leftX
+        MOVEBOX_TOP_LEFT!!.y    = topY
+
+        MOVEBOX_TOP_RIGHT!!.x   = rightX
+        MOVEBOX_TOP_RIGHT!!.y   = topY
+
+        MOVEBOX_BOTTOM_LEFT!!.x = leftX
+        MOVEBOX_BOTTOM_LEFT!!.y = bottomY
+
+        MOVEBOX_BOTTOM_RIGHT!!.x = rightX
+        MOVEBOX_BOTTOM_RIGHT!!.y = bottomY
+    }
+
+
+
+    private fun updateMoveBoxPosition( curTouchPoint: Point ){
+
+        val moveX : Int = curTouchPoint.x - mPrevTouchPoint!!.x
+        val moveY : Int = curTouchPoint.y - mPrevTouchPoint!!.y
+
+        MOVEBOX_TOP_LEFT!!.x += moveX
+        MOVEBOX_TOP_LEFT!!.y += moveY
+        MOVEBOX_TOP_RIGHT!!.x += moveX
+        MOVEBOX_TOP_RIGHT!!.y += moveY
+        MOVEBOX_BOTTOM_LEFT!!.x += moveX
+        MOVEBOX_BOTTOM_LEFT!!.y += moveY
+        MOVEBOX_BOTTOM_RIGHT!!.x += moveX
+        MOVEBOX_BOTTOM_RIGHT!!.y += moveY
+
+        CIRCLE_TOP_LEFT!!.x += moveX
+        CIRCLE_TOP_LEFT!!.y += moveY
+
+        CIRCLE_TOP_RIGHT!!.x += moveX
+        CIRCLE_TOP_RIGHT!!.y += moveY
+
+        CIRCLE_BOTTOM_LEFT!!.x += moveX
+        CIRCLE_BOTTOM_LEFT!!.y += moveY
+
+        CIRCLE_BOTTOM_RIGHT!!.x += moveX
+        CIRCLE_BOTTOM_RIGHT!!.y += moveY
+    }
+
+
+
+
+    private fun inMoveBoxArea( curTouchPoint: Point ) : Boolean{
+
+        if( MOVEBOX_TOP_LEFT!!.x < curTouchPoint.x && MOVEBOX_TOP_RIGHT!!.x > curTouchPoint.x
+                && MOVEBOX_TOP_LEFT!!.y < curTouchPoint.y && MOVEBOX_BOTTOM_RIGHT!!.y > curTouchPoint.y)
+            return true
+
+        return false
     }
 
 
