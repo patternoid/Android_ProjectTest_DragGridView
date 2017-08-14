@@ -90,12 +90,13 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         mPaintRect!!.strokeWidth = 3f
 
         mPaintCircle = Paint()
-        mPaintCircle!!.color = 0xff000000.toInt()
+        mPaintCircle!!.color = 0xffff0000.toInt()
         mPaintCircle!!.isAntiAlias = true
         mPaintCircle!!.isDither = true
         mPaintCircle!!.style = Paint.Style.FILL_AND_STROKE
         mPaintCircle!!.strokeJoin = Paint.Join.BEVEL
         mPaintCircle!!.strokeCap = Paint.Cap.BUTT
+        mPaintCircle!!.strokeWidth = 5f
 
         mPaintMoveBoxLine = Paint()
         mPaintMoveBoxLine!!.color = 0xffffff00.toInt()
@@ -104,7 +105,7 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         mPaintMoveBoxLine!!.style = Paint.Style.STROKE
         mPaintMoveBoxLine!!.strokeJoin = Paint.Join.BEVEL
         mPaintMoveBoxLine!!.strokeCap = Paint.Cap.BUTT
-        mPaintMoveBoxLine!!.strokeWidth = 10f
+        mPaintMoveBoxLine!!.strokeWidth = 6f
 
 
         mPatternImageBitmap = BitmapFactory.decodeResource(resources, R.drawable.pattern_1)
@@ -112,19 +113,6 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         mBitmapDrawable!!.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
 
         mPolyToPolyMatrix = Matrix()
-
-
-        /*
-        LEFT    = 90
-        TOP     = 40
-        RIGHT   = 500
-        BOTTOM  = 700
-
-        CIRCLE_TOP_LEFT = Point(LEFT, TOP)
-        CIRCLE_TOP_RIGHT = Point(RIGHT, TOP)
-        CIRCLE_BOTTOM_LEFT = Point(LEFT, BOTTOM)
-        CIRCLE_BOTTOM_RIGHT = Point(RIGHT, BOTTOM)
-*/
     }
 
 
@@ -176,7 +164,7 @@ class PerspectiveDistortView : View, View.OnTouchListener {
         canvas.drawBitmap(mPatternImageBitmap, mPolyToPolyMatrix, mPaintBitmapAlpha)
 
         Draw.drawBoxLine( canvas, CIRCLE_TOP_LEFT, CIRCLE_TOP_RIGHT, CIRCLE_BOTTOM_LEFT, CIRCLE_BOTTOM_RIGHT, mPaintRect )
-        Draw.drawBoxTouchCircle( canvas, CIRCLE_TOP_LEFT, CIRCLE_TOP_RIGHT, CIRCLE_BOTTOM_LEFT, CIRCLE_BOTTOM_RIGHT, mPaintCircle )
+        Draw.drawBoxTouchCircle( canvas, CIRCLE_TOP_LEFT, CIRCLE_TOP_RIGHT, CIRCLE_BOTTOM_LEFT, CIRCLE_BOTTOM_RIGHT, mPaintCircle , 15f)
 
         if( mIsTouchInMoveBoxArea ){
             Draw.drawBoxLine( canvas, MOVEBOX_TOP_LEFT, MOVEBOX_TOP_RIGHT, MOVEBOX_BOTTOM_LEFT, MOVEBOX_BOTTOM_RIGHT, mPaintMoveBoxLine )

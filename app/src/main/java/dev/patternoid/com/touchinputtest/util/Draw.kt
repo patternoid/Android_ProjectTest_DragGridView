@@ -26,18 +26,18 @@ class Draw {
         }
 
 
-        fun drawBoxTouchCircle( canvas : Canvas , topLeft : Point?, topRight : Point?, bottomLeft : Point?, bottomRight : Point?, drawPaint : Paint? ){
+        fun drawBoxTouchCircle( canvas : Canvas , topLeft : Point?, topRight : Point?, bottomLeft : Point?, bottomRight : Point?, drawPaint : Paint? , radius : Float){
             // circle top left
-            canvas.drawCircle(topLeft!!.x.toFloat(), topLeft!!.y.toFloat(), 10f, drawPaint!!)
+            canvas.drawCircle(topLeft!!.x.toFloat(), topLeft!!.y.toFloat(), radius, drawPaint!!)
 
             // circle top right
-            canvas.drawCircle(topRight!!.x.toFloat(), topRight!!.y.toFloat(), 10f, drawPaint!!)
+            canvas.drawCircle(topRight!!.x.toFloat(), topRight!!.y.toFloat(), radius, drawPaint!!)
 
             // circle bottom left
-            canvas.drawCircle(bottomLeft!!.x.toFloat(), bottomLeft!!.y.toFloat(), 10f, drawPaint!!)
+            canvas.drawCircle(bottomLeft!!.x.toFloat(), bottomLeft!!.y.toFloat(), radius, drawPaint!!)
 
             // circle bottom right
-            canvas.drawCircle(bottomRight!!.x.toFloat(), bottomRight!!.y.toFloat(), 10f, drawPaint!!)
+            canvas.drawCircle(bottomRight!!.x.toFloat(), bottomRight!!.y.toFloat(), radius, drawPaint!!)
         }
     }
 
